@@ -57,6 +57,7 @@ for epoch in range(num_epochs):
         total_loss += loss.item()
 
     print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {total_loss}")
+    # print("Epoch: ", epoch, "Loss: ", total_loss)
     training_dict[epoch+1] = round(total_loss,4)
 
 # Results and model storing 
