@@ -5,7 +5,7 @@ import nltk
 nltk.download('punkt_tab')
 import numpy as np
 from nltk.tokenize import sent_tokenize
-from sklearn.metrics.pairwise import cosine_similarity
+# from sklearn.metrics.pairwise import cosine_similarity
 from torch.utils.data import Dataset, DataLoader
 import torch.nn as nn
 print("PACKAGES SUCCESS")
