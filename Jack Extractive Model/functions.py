@@ -15,23 +15,40 @@ print(f"Using device: {device}")
 
 # Load BERT model and tokenizer for sentence embeddings
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-embedding_model = BertModel.from_pretrained("bert-base-uncased")
+embedding_model = BertModel.from_pretrained("bert-base-uncased").to(device)
 
-def get_sentence_embeddings(sentences):
-    inputs = tokenizer(sentences, return_tensors="pt", truncation=True, padding=True, max_length=512)
-    with torch.no_grad():
-        outputs = embedding_model(**inputs)
-    return outputs.last_hidden_state[:, 0, :]  # [CLS] token embeddings
+# reworked to handle batching
+def get_sentence_embeddings(sentences, batch_size = 8):
+    embeddings = []
+
+    for i in range(0, len(sentences), batch_size):
+        batch = sentences[i : i + batch_size] # get batch and pass into BERT model
+        inputs = tokenizer(batch, return_tensors="pt", truncation=True, padding=True, max_length=512).to(device)
+        with torch.no_grad():
+            outputs = embedding_model(**inputs)   
+        embeddings.append(outputs.last_hidden_state[:, 0, :]) # add CLS tokens to list 
+
+        return torch.cat(embeddings, dim= 0) # concat tensors together 
+    
+    # inputs = tokenizer(sentences, return_tensors="pt", truncation=True, padding=True, max_length=512).to(device)
+    # with torch.no_grad():
+    #     outputs = embedding_model(**inputs)
+    # return outputs.last_hidden_state[:, 0, :]  # get [CLS] token to "represent" sentence
 
 
 def calc_cosine_sim(body_embeddings, summary_embedding, threshold=0.75):
-    sim_matrix = cosine_similarity(body_embeddings.numpy(), summary_embedding.numpy())
-    labels = (sim_matrix.max(axis=1) >= threshold).astype(int)
+    # normalize body and summary embeddings
+    body_embeddings = body_embeddings / body_embeddings.norm(dim= 1, keepdim= True)
+    summary_embedding = summary_embedding / summary_embedding.norm(dim= 1, keepdim= True)
+
+    # matrix multiplication to get cosine matrix
+    sim_matrix = torch.mm(body_embeddings, summary_embedding.T)
+    labels = (sim_matrix.squeeze(-1) >= threshold).to(torch.float32) # check if above threshold
     return labels
 
-
+# Class for dataloader 
 class ArxivSummarizationDataset(Dataset):
-    def __init__(self, dataset, max_sentences=50):
+    def __init__(self, dataset, max_sentences=50): # max sentences limits length
         self.dataset = dataset
         self.max_sentences = max_sentences
 
@@ -50,14 +67,15 @@ class ArxivSummarizationDataset(Dataset):
         labels = calc_cosine_sim(sentence_embeddings, summary_embedding)
 
         return {
-            "sentence_embeddings": sentence_embeddings,
-            "cosine_labels": torch.tensor(labels, dtype=torch.float32)
+            "sentence_embeddings": sentence_embeddings.to(device),
+            "cosine_labels": labels.to(device)
         }
     
 
-    
+
+
 class RelevanceScoringModel(nn.Module):
-    def __init__(self, input_dim=768):  # 768 is BERT's embedding size
+    def __init__(self, input_dim=768):  # 768 for BERT's embedding size
         super(RelevanceScoringModel, self).__init__()
         self.fc1 = nn.Linear(input_dim, 256)
         self.relu = nn.ReLU()
