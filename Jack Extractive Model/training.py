@@ -24,7 +24,7 @@ ds_short = DatasetDict({"train": ds["train"].select(range(100)),
 
 
 # Create Dataset and DataLoader
-train_dataset = ArxivSummarizationDataset(ds_short["train"])
+train_dataset = ArxivSummarizationDataset(ds["train"])
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
 # Create FFNN and define optimizer, loss, epochs
