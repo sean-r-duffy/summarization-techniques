@@ -14,8 +14,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # Load BERT model and tokenizer for sentence embeddings
-tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-embedding_model = BertModel.from_pretrained("bert-base-uncased").to(device)
+
+# tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+# embedding_model = BertModel.from_pretrained("bert-base-uncased").to(device)
+
+# distilBERT
+tokenizer = BertTokenizer.from_pretrained("distilbert-base-uncased")
+embedding_model = BertModel.from_pretrained("distilbert-base-uncased").to(device)
 
 # reworked to handle batching
 def get_sentence_embeddings(sentences, batch_size = 8):
