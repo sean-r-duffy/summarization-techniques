@@ -28,7 +28,7 @@ train_dataset = ArxivSummarizationDataset(ds_short["train"])
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
 # Create FFNN and define optimizer, loss, epochs
-scoring_model = RelevanceScoringModel()
+scoring_model = RelevanceScoringModel().to(device)
 optimizer = torch.optim.Adam(scoring_model.parameters(), lr=0.001)
 criterion = nn.BCEWithLogitsLoss()
 num_epochs = 5

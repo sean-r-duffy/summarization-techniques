@@ -60,11 +60,11 @@ class ArxivSummarizationDataset(Dataset):
         summary = self.dataset[idx]["abstract"]
 
         # Embed sentences and summary
-        sentence_embeddings = get_sentence_embeddings(sentences)
+        sentence_embeddings = get_sentence_embeddings(sentences).to(device)
         summary_embedding = get_sentence_embeddings([summary]).mean(dim=0, keepdim=True)
 
         # Calculate cosine similarity labels
-        labels = calc_cosine_sim(sentence_embeddings, summary_embedding)
+        labels = calc_cosine_sim(sentence_embeddings, summary_embedding).to(device)
 
         return {
             "sentence_embeddings": sentence_embeddings.to(device),
