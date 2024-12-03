@@ -19,6 +19,9 @@ embedding_model = BertModel.from_pretrained("bert-base-uncased").to(device)
 
 # reworked to handle batching
 def get_sentence_embeddings(sentences, batch_size = 8):
+    if not sentences:
+        return torch.zeros((len(sentences), 768), device= device)
+    
     embeddings = []
 
     for i in range(0, len(sentences), batch_size):
@@ -49,7 +52,7 @@ def calc_cosine_sim(body_embeddings, summary_embedding, threshold=0.75):
 # Class for dataloader 
 class ArxivSummarizationDataset(Dataset):
     def __init__(self, dataset, max_sentences=50): # max sentences limits length
-        self.dataset = [item for item in dataset if item["article"] and item["abstract"]]
+        self.dataset = dataset
         self.max_sentences = max_sentences
 
     def __len__(self):
