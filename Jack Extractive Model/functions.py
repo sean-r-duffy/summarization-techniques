@@ -1,6 +1,6 @@
 from datasets import load_dataset, DatasetDict
 import torch
-from transformers import BertModel, BertTokenizer, AutoTokenizer, AutoModel
+from transformers import BertModel, BertTokenizer, DistilBertModel, DistilBertTokenizer
 import nltk
 nltk.download('punkt_tab')
 import numpy as np
@@ -19,8 +19,8 @@ print(f"Using device: {device}")
 # embedding_model = BertModel.from_pretrained("bert-base-uncased").to(device)
 
 # distilBERT
-tokenizer = BertTokenizer.from_pretrained("distilbert-base-uncased")
-embedding_model = BertModel.from_pretrained("distilbert-base-uncased").to(device)
+tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
+embedding_model = DistilBertModel.from_pretrained("distilbert-base-uncased").to(device)
 
 # reworked to handle batching
 def get_sentence_embeddings(sentences, batch_size = 8):
