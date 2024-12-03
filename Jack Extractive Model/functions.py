@@ -28,7 +28,7 @@ def get_sentence_embeddings(sentences, batch_size = 8):
             outputs = embedding_model(**inputs)   
         embeddings.append(outputs.last_hidden_state[:, 0, :]) # add CLS tokens to list 
 
-        return torch.cat(embeddings, dim= 0) # concat tensors together 
+        return torch.cat(embeddings, dim= 0).to(device) # concat tensors together 
     
     # inputs = tokenizer(sentences, return_tensors="pt", truncation=True, padding=True, max_length=512).to(device)
     # with torch.no_grad():

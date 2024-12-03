@@ -42,8 +42,8 @@ for epoch in range(num_epochs):
     scoring_model.train()
 
     for batch in train_loader:
-        sentence_embeddings = batch["sentence_embeddings"]
-        cosine_labels = batch["cosine_labels"]
+        sentence_embeddings = batch["sentence_embeddings"].to(device)
+        cosine_labels = batch["cosine_labels"].to(device)
 
         # Forward pass
         predictions = scoring_model(sentence_embeddings).squeeze(-1)
