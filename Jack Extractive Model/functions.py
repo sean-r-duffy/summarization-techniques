@@ -49,7 +49,7 @@ def calc_cosine_sim(body_embeddings, summary_embedding, threshold=0.75):
 # Class for dataloader 
 class ArxivSummarizationDataset(Dataset):
     def __init__(self, dataset, max_sentences=50): # max sentences limits length
-        self.dataset = dataset
+        self.dataset = [item for item in dataset if item["article"] and item["abstract"]]
         self.max_sentences = max_sentences
 
     def __len__(self):
