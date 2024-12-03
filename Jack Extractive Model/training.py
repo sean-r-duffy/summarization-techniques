@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader #, Dataset
 import torch.nn as nn
 from functions import *
 import json
+from tqdm import tqdm
 print("PACKAGES SUCCESS")
 
 # Set device
@@ -37,11 +38,12 @@ num_epochs = 5
 training_dict = {}
 
 # Training Loop
+print("TRAINING STARTING")
 for epoch in range(num_epochs):
     total_loss = 0.0
     scoring_model.train()
 
-    for batch in train_loader:
+    for batch in tqdm(train_loader):
         sentence_embeddings = batch["sentence_embeddings"].to(device)
         cosine_labels = batch["cosine_labels"].to(device)
 
