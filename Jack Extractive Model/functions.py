@@ -20,7 +20,7 @@ embedding_model = BertModel.from_pretrained("bert-base-uncased").to(device)
 # reworked to handle batching
 def get_sentence_embeddings(sentences, batch_size = 8):
     if not sentences:
-        return torch.zeros((len(sentences), 768), device= device)
+        return torch.zeros((1, 768), device= device)
     
     embeddings = []
 
