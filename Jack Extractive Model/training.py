@@ -66,4 +66,4 @@ for epoch in range(num_epochs):
 with open("training_results.json", "w") as outfile: 
     json.dump(training_dict, outfile)
 
-torch.save(scoring_model.state_dict(), "relevance_scoring_model.pt")
+torch.save(scoring_model.state_dict(), "arxiv_relevance_scoring_model.pt")
