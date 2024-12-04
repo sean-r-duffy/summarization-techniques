@@ -12,7 +12,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=False)
-model_list = ["arxiv_relevance_scoring_model.pt", "pubmed_relevance_scoring_model.pt", "govrep_relevance_scoring_model.pt"]
+model_list = [("arxiv_relevance_scoring_model.pt", "arxiv"), ("pubmed_relevance_scoring_model.pt", "pubmed"), ("govrep_relevance_scoring_model.pt", "govrep")]
 
 arxiv_test_dataset = load_dataset("ccdv/arxiv-summarization", split= "test")
 pubmed_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
@@ -62,9 +62,10 @@ def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_le
 
 data_dict = {}
 
-for model_string in tqdm(model_list):
+for model_string, model_name in tqdm(model_list):
     model = RelevanceScoringModel()
     model.load_state_dict(torch.load(model_string, weights_only= True))
+    model.to(device)
     model.eval()
     for dataset in dataset_list:
         if dataset[1] == 0:
@@ -72,17 +73,23 @@ for model_string in tqdm(model_list):
                 example = dataset[0][i]
                 article = example["article"]
                 abstract = example["abstract"]
+
                 gen_abstract = generate_summary(model, article)
+                gen_abstract = " ".join(gen_abstract)
+                
                 score_results = scorer.score(abstract, gen_abstract)
-                data_dict[model_string][dataset[2]] = score_results
+                data_dict[model_name][dataset[2]] = score_results
         else:
             for i in range(len(dataset_list)):
                 example = dataset[0][i]
                 article = example["report"]
                 abstract = example["summary"]
+
                 gen_abstract = generate_summary(model, article)
+                gen_abstract = " ".join(gen_abstract)
+
                 score_results = scorer.score(abstract, gen_abstract)
-                data_dict[model_string][dataset[2]] = score_results
+                data_dict[model_name][dataset[2]] = score_results
 
 with open("ROUGE_scores.json", "w") as outfile: 
     json.dump(data_dict, outfile)
