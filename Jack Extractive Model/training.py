@@ -17,11 +17,14 @@ print("PACKAGES SUCCESS")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-# load data
-ds = load_dataset("ccdv/arxiv-summarization", "section")
-ds_short = DatasetDict({"train": ds["train"].select(range(100)),
-            "validation": ds["validation"].select(range(1)),
-            "test": ds["test"].select(range(1))})
+# load data (arxiv)
+# ds = load_dataset("ccdv/arxiv-summarization", "section")
+# ds_short = DatasetDict({"train": ds["train"].select(range(100)),
+#             "validation": ds["validation"].select(range(1)),
+#             "test": ds["test"].select(range(1))})
+
+# load data pubmed
+ds = load_dataset("ccdv/pubmed-summarization", "section")
 
 
 # Create Dataset and DataLoader
@@ -66,4 +69,4 @@ for epoch in range(num_epochs):
 with open("training_results.json", "w") as outfile: 
     json.dump(training_dict, outfile)
 
-torch.save(scoring_model.state_dict(), "arxiv_relevance_scoring_model.pt")
+torch.save(scoring_model.state_dict(), "pubmed_relevance_scoring_model.pt")
