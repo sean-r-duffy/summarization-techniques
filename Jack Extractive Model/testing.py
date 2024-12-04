@@ -67,6 +67,7 @@ for model_string, model_name in tqdm(model_list):
     model.load_state_dict(torch.load(model_string, weights_only= True))
     model.to(device)
     model.eval()
+    data_dict[model_name] = {}
     for dataset in dataset_list:
         if dataset[1] == 0:
             for i in range(len(dataset_list)):
