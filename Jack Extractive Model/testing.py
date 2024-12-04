@@ -67,8 +67,10 @@ for model_string, model_name in tqdm(model_list):
     model.eval()
     data_dict[model_name] = {}
     for dataset in dataset_list:
+        dataset_name = dataset[2]
+        data_dict[model_name][dataset_name] = {}
         if dataset[1] == 0:
-            for i in range(len(dataset_list)):
+            for i in range(len(dataset[0])):
                 example = dataset[0][i]
                 article = example["article"]
                 abstract = example["abstract"]
@@ -77,9 +79,9 @@ for model_string, model_name in tqdm(model_list):
                 gen_abstract = " ".join(gen_abstract)
 
                 score_results = scorer.score(abstract, gen_abstract)
-                data_dict[model_name][dataset[2]] = score_results
+                data_dict[model_name][dataset_name][i] = score_results
         else:
-            for i in range(len(dataset_list)):
+            for i in range(len(dataset[0])):
                 example = dataset[0][i]
                 article = example["report"]
                 abstract = example["summary"]
@@ -88,7 +90,7 @@ for model_string, model_name in tqdm(model_list):
                 gen_abstract = " ".join(gen_abstract)
 
                 score_results = scorer.score(abstract, gen_abstract)
-                data_dict[model_name][dataset[2]] = score_results
+                data_dict[model_name][dataset_name][i] = score_results
 
 with open("ROUGE_scores.json", "w") as outfile: 
     json.dump(data_dict, outfile)
