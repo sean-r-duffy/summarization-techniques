@@ -16,7 +16,7 @@ model_list = [("arxiv_relevance_scoring_model.pt", "arxiv_model"), ("pubmed_rele
 
 arxiv_test_dataset = load_dataset("ccdv/arxiv-summarization", split= "test")
 pubmed_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
-govrep_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
+govrep_test_dataset = load_dataset("ccdv/govreport-summarization", split= "test")
 
 test_indexes = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
@@ -56,9 +56,7 @@ def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_le
 
     return relevant_sentences
 
-# model = RelevanceScoringModel()
-# model.load_state_dict(torch.load("relevance_scoring_model.pt", weights_only= True))
-# model.eval()
+
 
 data_dict = {}
 
@@ -97,10 +95,14 @@ with open("ROUGE_scores.json", "w") as outfile:
 
 
 
-# Load a test example
-# test_example = arxiv_test_dataset[0]
-# test_article = test_example["article"]
-# test_abstract = test_example["abstract"]  
+# model = RelevanceScoringModel()
+# model.load_state_dict(torch.load("relevance_scoring_model.pt", weights_only= True))
+# model.eval()
+
+# # Load a test example
+# test_example = govrep_test_dataset[0]
+# test_article = test_example["report"]
+# test_abstract = test_example["summary"]  
 
 # # Generate summary
 # generated_summary = generate_summary(model, test_article)
