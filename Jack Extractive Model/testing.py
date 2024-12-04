@@ -3,13 +3,34 @@ import torch
 import nltk
 from nltk.tokenize import sent_tokenize
 from functions import *
+import evaluate
 from rouge_score import rouge_scorer
+from tqdm import tqdm
+import json
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-test_dataset = load_dataset("ccdv/arxiv-summarization", split= "test")
-validation_dataset = load_dataset("ccdv/arxiv-summarization", split= "validation")
+scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=False)
+model_list = ["arxiv_relevance_scoring_model.pt", "pubmed_relevance_scoring_model.pt", "govrep_relevance_scoring_model.pt"]
+
+arxiv_test_dataset = load_dataset("ccdv/arxiv-summarization", split= "test")
+pubmed_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
+govrep_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
+
+test_indexes = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+
+arxiv_examples = []
+pubmed_examples = []
+govrep_examples = []
+
+for i in test_indexes:
+    arxiv_examples.append(arxiv_test_dataset[i])
+    pubmed_examples.append(pubmed_test_dataset[i])
+    govrep_examples.append(govrep_test_dataset[i])
+
+dataset_list = [(arxiv_examples, 0, "arxiv"), (pubmed_examples, 0, "pubmed"), (govrep_examples, 1, "govrep")] 
+    
 
 def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_length=5):
     # Tokenize the article into sentences
@@ -35,27 +56,52 @@ def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_le
 
     return relevant_sentences
 
-model = RelevanceScoringModel()
-model.load_state_dict(torch.load("relevance_scoring_model.pt", weights_only= True))
-model.eval()
+# model = RelevanceScoringModel()
+# model.load_state_dict(torch.load("relevance_scoring_model.pt", weights_only= True))
+# model.eval()
 
-# summary_list = []
-# for i in range(len(test_dataset)):
-#     gen_sum = generate_summary(model, test_dataset[i]["article"])
-#     summary_list.append([test_dataset[i]["abstract"], gen_sum])
+data_dict = {}
 
-# print("SUMMARY LIST LENGTH = ", len(summary_list))
-# print("DONE")
+for model_string in tqdm(model_list):
+    model = RelevanceScoringModel()
+    model.load_state_dict(torch.load(model_string, weights_only= True))
+    model.eval()
+    for dataset in dataset_list:
+        if dataset[1] == 0:
+            for i in range(len(dataset_list)):
+                example = dataset[0][i]
+                article = example["article"]
+                abstract = example["abstract"]
+                gen_abstract = generate_summary(model, article)
+                score_results = scorer.score(abstract, gen_abstract)
+                data_dict[model_string][dataset[2]] = score_results
+        else:
+            for i in range(len(dataset_list)):
+                example = dataset[0][i]
+                article = example["report"]
+                abstract = example["summary"]
+                gen_abstract = generate_summary(model, article)
+                score_results = scorer.score(abstract, gen_abstract)
+                data_dict[model_string][dataset[2]] = score_results
+
+with open("ROUGE_scores.json", "w") as outfile: 
+    json.dump(data_dict, outfile)
 
 
 
-# # Load a test example
-# test_example = test_dataset[0]
+# Load a test example
+# test_example = arxiv_test_dataset[0]
 # test_article = test_example["article"]
 # test_abstract = test_example["abstract"]  
 
 # # Generate summary
 # generated_summary = generate_summary(model, test_article)
+# generated_summary = " ".join(generated_summary)
+
+
+# score_results = scorer.score(test_abstract, generated_summary)
+# print(score_results)
+
 
 # # Print the results
 # print("Original Abstract:")

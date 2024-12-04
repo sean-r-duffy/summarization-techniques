@@ -2,7 +2,7 @@ from datasets import load_dataset, DatasetDict
 import torch
 from transformers import BertModel, BertTokenizer, DistilBertModel, DistilBertTokenizer
 import nltk
-nltk.download('punkt_tab')
+
 import numpy as np
 from nltk.tokenize import sent_tokenize
 # from sklearn.metrics.pairwise import cosine_similarity
@@ -64,13 +64,13 @@ class ArxivSummarizationDataset(Dataset):
         return len(self.dataset)
 
     def __getitem__(self, idx):
-        # # for arxiv and pubmed data
-        # sentences = self.dataset[idx]["article"][:self.max_sentences]
-        # summary = self.dataset[idx]["abstract"]
+        # for arxiv and pubmed data
+        sentences = self.dataset[idx]["article"][:self.max_sentences]
+        summary = self.dataset[idx]["abstract"]
 
-        # for gov data
-        sentences = self.dataset[idx]["report"][:self.max_sentences]
-        summary = self.dataset[idx]["summary"]
+        # # for gov data
+        # sentences = self.dataset[idx]["report"][:self.max_sentences]
+        # summary = self.dataset[idx]["summary"]
 
         # Embed sentences and summary
         sentence_embeddings = get_sentence_embeddings(sentences).to(device)

@@ -2,7 +2,6 @@ from datasets import load_dataset, DatasetDict
 import torch
 # from transformers import BertModel, BertTokenizer, AutoTokenizer, AutoModel
 import nltk
-# nltk.download('punkt_tab')
 # import numpy as np
 # from nltk.tokenize import sent_tokenize
 # from sklearn.metrics.pairwise import cosine_similarity
