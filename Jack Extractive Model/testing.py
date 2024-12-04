@@ -12,7 +12,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=False)
-model_list = [("arxiv_relevance_scoring_model.pt", "arxiv"), ("pubmed_relevance_scoring_model.pt", "pubmed"), ("govrep_relevance_scoring_model.pt", "govrep")]
+model_list = [("arxiv_relevance_scoring_model.pt", "arxiv_model"), ("pubmed_relevance_scoring_model.pt", "pubmed_model"), ("govrep_relevance_scoring_model.pt", "govrep_model")]
 
 arxiv_test_dataset = load_dataset("ccdv/arxiv-summarization", split= "test")
 pubmed_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
@@ -76,7 +76,7 @@ for model_string, model_name in tqdm(model_list):
 
                 gen_abstract = generate_summary(model, article)
                 gen_abstract = " ".join(gen_abstract)
-                
+
                 score_results = scorer.score(abstract, gen_abstract)
                 data_dict[model_name][dataset[2]] = score_results
         else:
