@@ -28,6 +28,7 @@ print(f"Using device: {device}")
 # ds = load_dataset("ccdv/pubmed-summarization", "section")
 
 # load data govreport (MUST CHANGE ARTICLE AND ABSTRACT TO FIT)
+print("gov data")
 ds = load_dataset("ccdv/govreport-summarization")
 
 
