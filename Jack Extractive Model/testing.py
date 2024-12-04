@@ -60,6 +60,7 @@ def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_le
 
 data_dict = {}
 
+print("inference starting")
 for model_string, model_name in tqdm(model_list):
     model = RelevanceScoringModel()
     model.load_state_dict(torch.load(model_string, weights_only= True))
