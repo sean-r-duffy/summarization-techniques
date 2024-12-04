@@ -24,6 +24,7 @@ print(f"Using device: {device}")
 #             "test": ds["test"].select(range(1))})
 
 # load data pubmed
+print("pubmed data")
 ds = load_dataset("ccdv/pubmed-summarization", "section")
 
 
