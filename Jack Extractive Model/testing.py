@@ -18,18 +18,20 @@ arxiv_test_dataset = load_dataset("ccdv/arxiv-summarization", split= "test")
 pubmed_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
 govrep_test_dataset = load_dataset("ccdv/govreport-summarization", split= "test")
 
-test_indexes = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+dataset_list = [(arxiv_test_dataset, 0, "arxiv"), (pubmed_test_dataset, 0, "pubmed"), (govrep_test_dataset, 1, "govrep")]
 
-arxiv_examples = []
-pubmed_examples = []
-govrep_examples = []
+# test_indexes = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
-for i in test_indexes:
-    arxiv_examples.append(arxiv_test_dataset[i])
-    pubmed_examples.append(pubmed_test_dataset[i])
-    govrep_examples.append(govrep_test_dataset[i])
+# arxiv_examples = []
+# pubmed_examples = []
+# govrep_examples = []
 
-dataset_list = [(arxiv_examples, 0, "arxiv"), (pubmed_examples, 0, "pubmed"), (govrep_examples, 1, "govrep")] 
+# for i in test_indexes:
+#     arxiv_examples.append(arxiv_test_dataset[i])
+#     pubmed_examples.append(pubmed_test_dataset[i])
+#     govrep_examples.append(govrep_test_dataset[i])
+
+# dataset_list = [(arxiv_examples, 0, "arxiv"), (pubmed_examples, 0, "pubmed"), (govrep_examples, 1, "govrep")] 
     
 
 def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_length=5):
@@ -55,6 +57,7 @@ def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_le
     relevant_sentences = [sentences[i] for i in top_indices]
 
     return relevant_sentences
+
 
 
 
@@ -93,7 +96,7 @@ for model_string, model_name in tqdm(model_list):
                 score_results = scorer.score(abstract, gen_abstract)
                 data_dict[model_name][dataset_name][i] = score_results
 
-with open("ROUGE_scores.json", "w") as outfile: 
+with open("ROUGE_scores_full.json", "w") as outfile: 
     json.dump(data_dict, outfile)
 
 
