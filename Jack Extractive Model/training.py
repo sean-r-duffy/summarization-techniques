@@ -33,7 +33,10 @@ ds = load_dataset("ccdv/arxiv-summarization", "section")
 
 # Create Dataset and DataLoader
 train_dataset = ArxivSummarizationDataset(ds["train"])
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size= 32, shuffle= True)
+
+val_dataset = ArxivSummarizationDataset(ds["validation"])
+val_loader = DataLoader(val_dataset, batch_size= 32, shuffle= False)
 
 # Create FFNN and define optimizer, loss, epochs
 scoring_model = RelevanceScoringModel().to(device)
@@ -50,7 +53,8 @@ for epoch in range(num_epochs):
     total_loss = 0.0
     scoring_model.train()
 
-    for batch in tqdm(train_loader):
+    for batch in tqdm(train_loader, desc= f"Training Epoch: {epoch}"):
+        # embed sentences
         sentence_embeddings = batch["sentence_embeddings"].to(device)
         cosine_labels = batch["cosine_labels"].to(device)
 
@@ -58,15 +62,37 @@ for epoch in range(num_epochs):
         predictions = scoring_model(sentence_embeddings).squeeze(-1)
         loss = criterion(predictions, cosine_labels)
 
-        # Backward pass and optimization
+        # Backward and optimizer
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
         total_loss += loss.item()
 
-    print(f"Epoch {epoch}, Loss: {total_loss}")
-    training_dict[epoch+1] = round(total_loss,4)
+    # Validation
+    scoring_model.eval()
+    val_loss = 0
+    with torch.no_grad():
+        for batch in tqdm(val_loader, desc= f"Validation Epoch: {epoch}"):
+            # embed sentences
+            sentence_embeddings = batch["sentence_embeddings"].to(device)
+            cosine_labels = batch["cosine_labels"].to(device)
+
+            # forward pass
+            predictions = scoring_model(sentence_embeddings).squeeze(-1)
+
+            # store loss
+            loss = criterion(predictions, cosine_labels)
+            val_loss += loss.item()
+    
+    # average losses
+    avg_train = total_loss / len(train_loader)
+    avg_val = val_loss / len(val_loader)
+
+    print(f"Epoch {epoch}:   Training Loss: {avg_train}   Validation Loss: {avg_val}")
+
+    training_dict[epoch+1] = {"train_loss": round(avg_train, 4),
+                              "validation_loss": round(avg_val, 4)}
 
 # Results and model storing 
 with open("arxiv_training_results.json", "w") as outfile: 
