@@ -14,6 +14,7 @@ print(f"Using device: {device}")
 
 
 # # load data (arxiv)
+print("USING ARXIV DATA")
 ds = load_dataset("ccdv/arxiv-summarization", "section")
 
 # # load data pubmed
