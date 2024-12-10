@@ -1,22 +1,16 @@
 from datasets import load_dataset, DatasetDict
 import torch
-from transformers import BertModel, BertTokenizer, DistilBertModel, DistilBertTokenizer
+from transformers import DistilBertModel, DistilBertTokenizer
 import nltk
-
 import numpy as np
 from nltk.tokenize import sent_tokenize
-# from sklearn.metrics.pairwise import cosine_similarity
+
 from torch.utils.data import Dataset, DataLoader
 import torch.nn as nn
 print("PACKAGES SUCCESS")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
-
-# Load BERT model and tokenizer for sentence embeddings
-
-# tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-# embedding_model = BertModel.from_pretrained("bert-base-uncased").to(device)
 
 # distilBERT
 tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
@@ -38,11 +32,6 @@ def get_sentence_embeddings(sentences, batch_size = 8):
 
         return torch.cat(embeddings, dim= 0).to(device) # concat tensors together 
     
-    # inputs = tokenizer(sentences, return_tensors="pt", truncation=True, padding=True, max_length=512).to(device)
-    # with torch.no_grad():
-    #     outputs = embedding_model(**inputs)
-    # return outputs.last_hidden_state[:, 0, :]  # get [CLS] token to "represent" sentence
-
 
 def calc_cosine_sim(body_embeddings, summary_embedding, threshold=0.75):
     # normalize body and summary embeddings
@@ -81,8 +70,7 @@ class ArxivSummarizationDataset(Dataset):
 
         return {
             "sentence_embeddings": sentence_embeddings.to(device),
-            "cosine_labels": labels.to(device)
-        }
+            "cosine_labels": labels.to(device)}
     
 
 

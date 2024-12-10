@@ -1,11 +1,7 @@
 from datasets import load_dataset, DatasetDict
 import torch
-# from transformers import BertModel, BertTokenizer, AutoTokenizer, AutoModel
 import nltk
-# import numpy as np
-# from nltk.tokenize import sent_tokenize
-# from sklearn.metrics.pairwise import cosine_similarity
-from torch.utils.data import DataLoader #, Dataset
+from torch.utils.data import DataLoader
 import torch.nn as nn
 from functions import *
 import json
@@ -16,19 +12,22 @@ print("PACKAGES SUCCESS")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
+
 # # load data (arxiv)
-# ds = load_dataset("ccdv/arxiv-summarization", "section")
-# ds_short = DatasetDict({"train": ds["train"].select(range(100)),
-#             "validation": ds["validation"].select(range(1)),
-#             "test": ds["test"].select(range(1))})
+ds = load_dataset("ccdv/arxiv-summarization", "section")
 
 # # load data pubmed
 # print("pubmed data")
 # ds = load_dataset("ccdv/pubmed-summarization", "section")
 
-# load data govreport (MUST CHANGE ARTICLE AND ABSTRACT TO FIT)
-print("gov data")
-ds = load_dataset("ccdv/govreport-summarization")
+# # load data govreport (MUST CHANGE ARTICLE AND ABSTRACT TO FIT)
+# print("gov data")
+# ds = load_dataset("ccdv/govreport-summarization")
+
+# # dataset for testing
+# ds_short = DatasetDict({"train": ds["train"].select(range(100)),
+#             "validation": ds["validation"].select(range(1)),
+#             "test": ds["test"].select(range(1))})
 
 
 # Create Dataset and DataLoader
@@ -65,12 +64,11 @@ for epoch in range(num_epochs):
 
         total_loss += loss.item()
 
-    print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {total_loss}")
-    # print("Epoch: ", epoch, "Loss: ", total_loss)
+    print(f"Epoch {epoch}, Loss: {total_loss}")
     training_dict[epoch+1] = round(total_loss,4)
 
 # Results and model storing 
-with open("training_results.json", "w") as outfile: 
+with open("arxiv_training_results.json", "w") as outfile: 
     json.dump(training_dict, outfile)
 
-torch.save(scoring_model.state_dict(), "govrep_relevance_scoring_model.pt")
+torch.save(scoring_model.state_dict(), "arxiv_relevance_scoring_model.pt")

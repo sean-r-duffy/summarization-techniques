@@ -101,30 +101,6 @@ with open("ROUGE_scores_full.json", "w") as outfile:
 
 
 
-# model = RelevanceScoringModel()
-# model.load_state_dict(torch.load("relevance_scoring_model.pt", weights_only= True))
-# model.eval()
-
-# # Load a test example
-# test_example = govrep_test_dataset[0]
-# test_article = test_example["report"]
-# test_abstract = test_example["summary"]  
-
-# # Generate summary
-# generated_summary = generate_summary(model, test_article)
-# generated_summary = " ".join(generated_summary)
-
-
-# score_results = scorer.score(test_abstract, generated_summary)
-# print(score_results)
-
-
-# # Print the results
-# print("Original Abstract:")
-# print(test_abstract)
-# print("\nGenerated Summary:")
-# print(generated_summary)
-
 
 
 
