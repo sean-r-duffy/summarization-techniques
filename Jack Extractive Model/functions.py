@@ -53,13 +53,13 @@ class ArxivSummarizationDataset(Dataset):
         return len(self.dataset)
 
     def __getitem__(self, idx):
-        # for arxiv and pubmed data
-        sentences = self.dataset[idx]["article"][:self.max_sentences]
-        summary = self.dataset[idx]["abstract"]
+        # # for arxiv and pubmed data
+        # sentences = self.dataset[idx]["article"][:self.max_sentences]
+        # summary = self.dataset[idx]["abstract"]
 
-        # # for gov data
-        # sentences = self.dataset[idx]["report"][:self.max_sentences]
-        # summary = self.dataset[idx]["summary"]
+        # for gov data
+        sentences = self.dataset[idx]["report"][:self.max_sentences]
+        summary = self.dataset[idx]["summary"]
 
         # Embed sentences and summary
         sentence_embeddings = get_sentence_embeddings(sentences).to(device)
