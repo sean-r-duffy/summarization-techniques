@@ -14,12 +14,12 @@ print(f"Using device: {device}")
 
 
 # # load data (arxiv)
-print("USING ARXIV DATA")
-ds = load_dataset("ccdv/arxiv-summarization", "section")
+# print("USING ARXIV DATA")
+# ds = load_dataset("ccdv/arxiv-summarization", "section")
 
-# # load data pubmed
-# print("pubmed data")
-# ds = load_dataset("ccdv/pubmed-summarization", "section")
+# load data pubmed
+print("USING PUBMED")
+ds = load_dataset("ccdv/pubmed-summarization", "section")
 
 # # load data govreport (MUST CHANGE ARTICLE AND ABSTRACT TO FIT)
 # print("gov data")
@@ -95,7 +95,7 @@ for epoch in range(num_epochs):
                               "validation_loss": round(avg_val, 4)}
 
 # Results and model storing 
-with open("arxiv_training_results.json", "w") as outfile: 
+with open("pubmed_training_results.json", "w") as outfile: 
     json.dump(training_dict, outfile)
 
-torch.save(scoring_model.state_dict(), "arxiv_relevance_scoring_model.pt")
+torch.save(scoring_model.state_dict(), "pubmed_relevance_scoring_model.pt")
