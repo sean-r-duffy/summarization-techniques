@@ -8,16 +8,21 @@ from rouge_score import rouge_scorer
 from tqdm import tqdm
 import json
 
+# Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
+# scorer
 scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=False)
+
+# testing setup
 model_list = [("arxiv_relevance_scoring_model.pt", "arxiv_model"), ("pubmed_relevance_scoring_model.pt", "pubmed_model"), ("govrep_relevance_scoring_model.pt", "govrep_model")]
 
 arxiv_test_dataset = load_dataset("ccdv/arxiv-summarization", split= "test")
 pubmed_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
 govrep_test_dataset = load_dataset("ccdv/govreport-summarization", split= "test")
 
+# (dataset name, structure of article and summary, string name)
 dataset_list = [(arxiv_test_dataset, 0, "arxiv"), (pubmed_test_dataset, 0, "pubmed"), (govrep_test_dataset, 1, "govrep")]
 
 # test_indexes = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
