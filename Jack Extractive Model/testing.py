@@ -65,21 +65,23 @@ def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_le
 
 
 
-
+# output dictionary
 data_dict = {}
 
 print("inference starting")
-for model_string, model_name in tqdm(model_list):
+for model_string, model_name in tqdm(model_list): # iterate through each model
+    # load in model
     model = RelevanceScoringModel()
     model.load_state_dict(torch.load(model_string, weights_only= True))
-    model.to(device)
+    model.to(device) # to gpu
     model.eval()
-    data_dict[model_name] = {}
-    for dataset in dataset_list:
+    data_dict[model_name] = {} # create first dictionary 
+    for dataset in dataset_list: # iterate through datasets and store name
         dataset_name = dataset[2]
-        data_dict[model_name][dataset_name] = {}
-        if dataset[1] == 0:
+        data_dict[model_name][dataset_name] = {} # next dictionary 
+        if dataset[1] == 0: # pubmed and arxiv
             for i in range(len(dataset[0])):
+                # get summary and article then generate summary 
                 example = dataset[0][i]
                 article = example["article"]
                 abstract = example["abstract"]
@@ -87,10 +89,11 @@ for model_string, model_name in tqdm(model_list):
                 gen_abstract = generate_summary(model, article)
                 gen_abstract = " ".join(gen_abstract)
 
+                # score results and store 
                 score_results = scorer.score(abstract, gen_abstract)
                 data_dict[model_name][dataset_name][i] = score_results
         else:
-            for i in range(len(dataset[0])):
+            for i in range(len(dataset[0])): # govreport 
                 example = dataset[0][i]
                 article = example["report"]
                 abstract = example["summary"]
@@ -101,6 +104,7 @@ for model_string, model_name in tqdm(model_list):
                 score_results = scorer.score(abstract, gen_abstract)
                 data_dict[model_name][dataset_name][i] = score_results
 
+# save dictionary 
 with open("ROUGE_scores_full.json", "w") as outfile: 
     json.dump(data_dict, outfile)
 

@@ -4,20 +4,21 @@ from transformers import DistilBertModel, DistilBertTokenizer
 import nltk
 import numpy as np
 from nltk.tokenize import sent_tokenize
-
 from torch.utils.data import Dataset, DataLoader
 import torch.nn as nn
 print("PACKAGES SUCCESS")
 
+# Check DEvice
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-# distilBERT
+# distilBERT model
 tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
 embedding_model = DistilBertModel.from_pretrained("distilbert-base-uncased").to(device)
 
-# reworked to handle batching
+# Embedding reworked to handle batching for more efficiency
 def get_sentence_embeddings(sentences, batch_size = 8):
+    # handle empty sentences
     if not sentences:
         return torch.zeros((1, 768), device= device)
     
@@ -44,7 +45,7 @@ def calc_cosine_sim(body_embeddings, summary_embedding, threshold=0.75):
     return labels
 
 # Class for dataloader 
-class ArxivSummarizationDataset(Dataset):
+class SummarizationDataset(Dataset):
     def __init__(self, dataset, max_sentences=50): # max sentences limits length
         self.dataset = dataset
         self.max_sentences = max_sentences
@@ -87,4 +88,5 @@ class RelevanceScoringModel(nn.Module):
         x = self.relu(x)
         x = self.fc2(x)
         return x
+
 print("Functions loaded")
