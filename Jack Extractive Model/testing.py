@@ -8,16 +8,21 @@ from rouge_score import rouge_scorer
 from tqdm import tqdm
 import json
 
+# Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
+# scorer
 scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=False)
+
+# testing setup
 model_list = [("arxiv_relevance_scoring_model.pt", "arxiv_model"), ("pubmed_relevance_scoring_model.pt", "pubmed_model"), ("govrep_relevance_scoring_model.pt", "govrep_model")]
 
 arxiv_test_dataset = load_dataset("ccdv/arxiv-summarization", split= "test")
 pubmed_test_dataset = load_dataset("ccdv/pubmed-summarization", split= "test")
 govrep_test_dataset = load_dataset("ccdv/govreport-summarization", split= "test")
 
+# (dataset name, structure of article and summary, string name)
 dataset_list = [(arxiv_test_dataset, 0, "arxiv"), (pubmed_test_dataset, 0, "pubmed"), (govrep_test_dataset, 1, "govrep")]
 
 # test_indexes = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
@@ -60,21 +65,23 @@ def generate_summary(model, article, threshold=0.5, max_sentences=50, summary_le
 
 
 
-
+# output dictionary
 data_dict = {}
 
 print("inference starting")
-for model_string, model_name in tqdm(model_list):
+for model_string, model_name in tqdm(model_list): # iterate through each model
+    # load in model
     model = RelevanceScoringModel()
     model.load_state_dict(torch.load(model_string, weights_only= True))
-    model.to(device)
+    model.to(device) # to gpu
     model.eval()
-    data_dict[model_name] = {}
-    for dataset in dataset_list:
+    data_dict[model_name] = {} # create first dictionary 
+    for dataset in dataset_list: # iterate through datasets and store name
         dataset_name = dataset[2]
-        data_dict[model_name][dataset_name] = {}
-        if dataset[1] == 0:
+        data_dict[model_name][dataset_name] = {} # next dictionary 
+        if dataset[1] == 0: # pubmed and arxiv
             for i in range(len(dataset[0])):
+                # get summary and article then generate summary 
                 example = dataset[0][i]
                 article = example["article"]
                 abstract = example["abstract"]
@@ -82,10 +89,11 @@ for model_string, model_name in tqdm(model_list):
                 gen_abstract = generate_summary(model, article)
                 gen_abstract = " ".join(gen_abstract)
 
+                # score results and store 
                 score_results = scorer.score(abstract, gen_abstract)
                 data_dict[model_name][dataset_name][i] = score_results
         else:
-            for i in range(len(dataset[0])):
+            for i in range(len(dataset[0])): # govreport 
                 example = dataset[0][i]
                 article = example["report"]
                 abstract = example["summary"]
@@ -96,34 +104,11 @@ for model_string, model_name in tqdm(model_list):
                 score_results = scorer.score(abstract, gen_abstract)
                 data_dict[model_name][dataset_name][i] = score_results
 
+# save dictionary 
 with open("ROUGE_scores_full.json", "w") as outfile: 
     json.dump(data_dict, outfile)
 
 
-
-# model = RelevanceScoringModel()
-# model.load_state_dict(torch.load("relevance_scoring_model.pt", weights_only= True))
-# model.eval()
-
-# # Load a test example
-# test_example = govrep_test_dataset[0]
-# test_article = test_example["report"]
-# test_abstract = test_example["summary"]  
-
-# # Generate summary
-# generated_summary = generate_summary(model, test_article)
-# generated_summary = " ".join(generated_summary)
-
-
-# score_results = scorer.score(test_abstract, generated_summary)
-# print(score_results)
-
-
-# # Print the results
-# print("Original Abstract:")
-# print(test_abstract)
-# print("\nGenerated Summary:")
-# print(generated_summary)
 
 
 
