@@ -1,4 +1,5 @@
 /models/
 /.idea
 .DS_Store
-.DS_Store
+Jack Extractive Model/__pycache__/
+Jack Extractive Model/.DS_Store
