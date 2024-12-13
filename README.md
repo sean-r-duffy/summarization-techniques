@@ -1,7 +1,12 @@
 # Extractive vs Abstractive Summarization: Out of Domain Inference
-## Northeastern University - CS6120 - Natural Language Processing - Final Project
-## [Nick Cantalupa](https://github.com/ncantalupa) | [Jack Carpini](https://github.com/jcarpini) | [Sean Duffy](https://github.com/sean-r-duffy)
+### Northeastern University - CS6120 - Natural Language Processing - Final Project
+### [Nick Cantalupa](https://github.com/ncantalupa) | [Jack Carpini](https://github.com/jcarpini) | [Sean Duffy](https://github.com/sean-r-duffy)
 
+# Instructions
+
+### Setup
+
+Install the required packages in `environment.yml`.
 
 ### Extractive Model
 
