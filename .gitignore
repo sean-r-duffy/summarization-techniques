@@ -1,5 +1,7 @@
-/models/
 /.idea
 .DS_Store
-Jack Extractive Model/__pycache__/
-Jack Extractive Model/.DS_Store
+extractive/__pycache__/
+extractive/.DS_Store
+/models/abstractive/arxiv_final/
+/models/abstractive/govreport_final/
+/models/abstractive/pubmed_final/

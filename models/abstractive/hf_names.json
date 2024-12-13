@@ -1,0 +1,5 @@
+{
+  "arxiv": "seanduffy/arxiv_summarizer",
+  "pubmed": "seanduffy/pubmed_summarizer",
+  "govreport": "seanduffy/govreport_summarizer"
+}

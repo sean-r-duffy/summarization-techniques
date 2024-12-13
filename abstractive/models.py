@@ -103,7 +103,7 @@ class AbstractiveSummarizer:
         data = data['test'].shuffle(seed=41).select(range(n))
         rouge = Rouge()
 
-        os.makedirs(f'results/{self.name}', exist_ok=True)
+        os.makedirs(f'results/abstractive/{self.name}', exist_ok=True)
         with open(f'results/{self.name}/{dataset_name}.csv', 'w') as f:
             writer = csv.writer(f)
             writer.writerow(["abstract", "generated", "rouge1-r", "rouge1-p", "rouge1-f",
